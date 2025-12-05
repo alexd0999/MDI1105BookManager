@@ -60,7 +60,7 @@ struct DetailView: View {
                 Divider()
                 
                 //Description Section
-                DescriptionView(text: book.details)
+                DescriptionView(name: book.title, text: book.details)
                     .padding(.horizontal)
                 
                 Divider()
@@ -83,7 +83,7 @@ struct DetailView: View {
             }
             .padding(.top)
         }
-        .navigationTitle("Book Details")
+        .navigationTitle(book.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             Button("Edit") {
@@ -99,11 +99,12 @@ struct DetailView: View {
 
 //created separate view per assignment instructions
 struct DescriptionView: View {
+    var name: String
     var text: String
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Description")
+            Text("Description for \(name)")
                 .font(.headline)
                 .padding(.bottom, 2)
             
