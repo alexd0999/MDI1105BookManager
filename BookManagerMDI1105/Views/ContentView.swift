@@ -6,41 +6,59 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
+    @Environment(\.modelContext) private var modelContext
     
-    //initializing the list with data from my API
-    @State var books = getBooks()
-    @State var showAddBookSheet: Bool = false
-    
-    //created a placeholder book for the Add feature
-    @State var newBook = Book(title: "", author: "", details: "")
+    //settings tracker, no data load
+    @AppStorage("hasLoadedSampleData") private var hasLoadedSampleData = false
+    @AppStorage("SETTINGS_THEME") private var selectedTheme: Theme = .system
     
     var body: some View {
-        NavigationStack {
-            List($books) { $bookInList in
-                NavigationLink(destination: DetailView(book: $bookInList)) {
-                    BookLinkItem(book: bookInList)
+        TabView {
+            BookListView()
+                .tabItem {
+                    Label("Books", systemImage: "book.fill")
                 }
-            }
-            .navigationTitle("Book Manager")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Add") {
-                        //reset the newBook variable before opening the sheet
-                        newBook = Book(title: "", author: "", details: "")
-                        showAddBookSheet.toggle()
-                    }
+            
+            //connected FavoritesView
+            FavoritesView()
+                .tabItem {
+                    Label("Favorites", systemImage: "heart.fill")
                 }
-            }
-            .sheet(isPresented: $showAddBookSheet) {
-                //when sheet is dismissed, checks if I should add the book
-                if !newBook.title.isEmpty {
-                    books.append(newBook)
+            
+            Settings()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
                 }
-            } content: {
-                AddEditView(bookToEdit: $newBook)
-            }
         }
+        //ensure the color scheme applies to the entire app
+        .preferredColorScheme(selectedTheme == .system ? nil : (selectedTheme == .dark ? .dark : .light))
+        .onAppear {
+            checkForAndLoadSampleData()
+        }
+    }
+    
+    private func checkForAndLoadSampleData() {
+        //check if database is empty
+        let descriptor = FetchDescriptor<Book>()
+        let existingBooksCount = (try? modelContext.fetchCount(descriptor)) ?? 0
+        
+        if existingBooksCount == 0 {
+            print("Database is empty. Loading sample data...")
+            loadSampleData()
+            hasLoadedSampleData = true
+        } else {
+            print("Database already has data. Skipping sample load.")
+        }
+    }
+    
+    private func loadSampleData() {
+        for book in Book.sampleData {
+            modelContext.insert(book)
+        }
+        //save changes immediately
+        try? modelContext.save()
     }
 }
