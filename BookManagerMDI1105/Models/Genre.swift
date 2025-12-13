@@ -15,4 +15,3 @@ enum Genre: String, CaseIterable, Hashable, Codable {
     case dystopian = "Dystopian"
     case unknown = "unknown"
 }
-

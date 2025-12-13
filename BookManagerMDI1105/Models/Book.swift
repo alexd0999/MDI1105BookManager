@@ -5,20 +5,6 @@
 //  Created by Alex Arthur on 11/25/25.
 //
 
-//
-//  Book.swift
-//  BookManagerMDI1105
-//
-//  Created by Alex Arthur on 11/25/25.
-//
-
-//
-//  Book.swift
-//  BookManagerMDI1105
-//
-//  Created by Alex Arthur on 11/25/25.
-//
-
 import SwiftUI
 import SwiftData
 
